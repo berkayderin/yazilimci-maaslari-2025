@@ -176,7 +176,6 @@ export async function GET(request: Request) {
       .sort((a, b) => b.value - a.value)
       .slice(0, 10);
 
-    // Şehirlere göre maaş ortalaması
     const turkishCities = [
       "Adana", "Adıyaman", "Afyonkarahisar", "Aksaray", "Amasya", "Ankara", "Antalya",
       "Ardahan", "Artvin", "Aydın", "Ağrı", "Balıkesir", "Batman", "Bilecik", "Bitlis",
