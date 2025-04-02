@@ -34,8 +34,6 @@ export async function GET(request: NextRequest) {
       workTypeDistribution: calculateWorkTypeDistribution(filteredData),
       
       salaryRanges: {
-        min: calculateMinSalary(filteredData),
-        max: calculateMaxSalary(filteredData),
         avg: calculateAvgSalary(filteredData)
       }
     };
@@ -62,11 +60,11 @@ function calculatePositionAverageSalary(data: SalaryData[]) {
     let avgSalary = 0;
     
     if (salaryRange.length > 1) {
-      const min = parseFloat(salaryRange[0].replace(/[^0-9]/g, ''));
-      const max = parseFloat(salaryRange[1].replace(/[^0-9]/g, ''));
+      const min = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
+      const max = parseFloat(salaryRange[1].replace(/\./g, '').replace(',', '.'));
       avgSalary = (min + max) / 2;
     } else {
-      avgSalary = parseFloat(salaryRange[0].replace(/[^0-9]/g, ''));
+      avgSalary = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
     }
     
     if (!positions[position]) {
@@ -92,11 +90,11 @@ function calculateExperienceSalaryData(data: SalaryData[]) {
     let avgSalary = 0;
     
     if (salaryRange.length > 1) {
-      const min = parseFloat(salaryRange[0].replace(/[^0-9]/g, ''));
-      const max = parseFloat(salaryRange[1].replace(/[^0-9]/g, ''));
+      const min = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
+      const max = parseFloat(salaryRange[1].replace(/\./g, '').replace(',', '.'));
       avgSalary = (min + max) / 2;
     } else {
-      avgSalary = parseFloat(salaryRange[0].replace(/[^0-9]/g, ''));
+      avgSalary = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
     }
     
     if (!experienceLevels[experience]) {
@@ -134,11 +132,11 @@ function calculateCompanySizeAvgSalary(data: SalaryData[]) {
     let avgSalary = 0;
     
     if (salaryRange.length > 1) {
-      const min = parseFloat(salaryRange[0].replace(/[^0-9]/g, ''));
-      const max = parseFloat(salaryRange[1].replace(/[^0-9]/g, ''));
+      const min = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
+      const max = parseFloat(salaryRange[1].replace(/\./g, '').replace(',', '.'));
       avgSalary = (min + max) / 2;
     } else {
-      avgSalary = parseFloat(salaryRange[0].replace(/[^0-9]/g, ''));
+      avgSalary = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
     }
     
     if (!sizes[size]) {
@@ -196,61 +194,15 @@ function calculateAvgSalary(data: SalaryData[]): number {
     let avgSalary = 0;
     
     if (salaryRange.length > 1) {
-      const min = parseFloat(salaryRange[0].replace(/[^0-9]/g, ''));
-      const max = parseFloat(salaryRange[1].replace(/[^0-9]/g, ''));
+      const min = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
+      const max = parseFloat(salaryRange[1].replace(/\./g, '').replace(',', '.'));
       avgSalary = (min + max) / 2;
     } else {
-      avgSalary = parseFloat(salaryRange[0].replace(/[^0-9]/g, ''));
+      avgSalary = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
     }
     
     total += avgSalary;
   });
   
   return Math.round(total / data.length);
-}
-
-function calculateMinSalary(data: SalaryData[]): number {
-  if (data.length === 0) return 0;
-  
-  let minSalary = Infinity;
-  
-  data.forEach(item => {
-    const salaryRange = item.salary.split(' - ');
-    let salary = 0;
-    
-    if (salaryRange.length > 1) {
-      salary = parseFloat(salaryRange[0].replace(/[^0-9]/g, ''));
-    } else {
-      salary = parseFloat(salaryRange[0].replace(/[^0-9]/g, ''));
-    }
-    
-    if (salary < minSalary) {
-      minSalary = salary;
-    }
-  });
-  
-  return Math.round(minSalary);
-}
-
-function calculateMaxSalary(data: SalaryData[]): number {
-  if (data.length === 0) return 0;
-  
-  let maxSalary = 0;
-  
-  data.forEach(item => {
-    const salaryRange = item.salary.split(' - ');
-    let salary = 0;
-    
-    if (salaryRange.length > 1) {
-      salary = parseFloat(salaryRange[1].replace(/[^0-9]/g, ''));
-    } else {
-      salary = parseFloat(salaryRange[0].replace(/[^0-9]/g, ''));
-    }
-    
-    if (salary > maxSalary) {
-      maxSalary = salary;
-    }
-  });
-  
-  return Math.round(maxSalary);
 } 

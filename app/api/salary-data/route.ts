@@ -70,11 +70,11 @@ function calculateAvgSalary(data: SalaryData[]): number {
     let avgSalary = 0;
     
     if (salaryRange.length > 1) {
-      const min = parseFloat(salaryRange[0].replace(/[^0-9]/g, ''));
-      const max = parseFloat(salaryRange[1].replace(/[^0-9]/g, ''));
+      const min = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
+      const max = parseFloat(salaryRange[1].replace(/\./g, '').replace(',', '.'));
       avgSalary = (min + max) / 2;
     } else {
-      avgSalary = parseFloat(salaryRange[0].replace(/[^0-9]/g, ''));
+      avgSalary = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
     }
     
     total += avgSalary;
