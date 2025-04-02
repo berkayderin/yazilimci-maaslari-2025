@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   description:
     "Türkiye ve yurt dışındaki yazılımcı maaşlarının kapsamlı analizi. Pozisyon, deneyim, şirket büyüklüğü ve çalışma türüne göre yazılımcı maaş istatistikleri.",
   keywords:
-    "yazılımcı maaşları, yazılım maaşları, türkiye yazılımcı maaşları, yazılım sektörü, maaş analizi, developer maaşları, 2025 maaşları",
+    "yazılımcı maaşları, yazılım maaşları, türkiye yazılımcı maaşları, yazılım sektörü, maaş analizi, developer maaşları, 2025 yazılımcı maaşları, yazılımcı maaşları 2025",
   authors: [
     {
       name: "Berkay Derin",
@@ -56,6 +56,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
+      <head>
+        <meta
+          name="google-site-verification"
+          content="E48xZpLJeXGnThhoN1OyINfDKvX16nSNv-l35i2uiS0"
+        />
+      </head>
       <body className={`${spaceGrotesk.variable} font-sans antialiased`}>
         {children}
         <Analytics />
