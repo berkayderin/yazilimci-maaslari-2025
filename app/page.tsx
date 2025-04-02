@@ -603,7 +603,7 @@ export default function Home() {
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline font-medium"
           >
-            Veri Kaynağı
+            Kaynak
           </a>{" "}
           &middot;{" "}
           <a
@@ -612,7 +612,7 @@ export default function Home() {
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline font-medium"
           >
-            Geliştirici
+            Sofware Engineer
           </a>
         </p>
       </footer>

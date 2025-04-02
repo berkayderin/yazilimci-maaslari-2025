@@ -8,10 +8,9 @@
   }
 }
 
-
-
 @layer base {
   :root {
+    --font-family: 'Space Grotesk';
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -64,15 +63,17 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
-}
-
-
-
-@layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-family);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+  }
+  p, span, div {
+    font-weight: 400;
   }
 }
