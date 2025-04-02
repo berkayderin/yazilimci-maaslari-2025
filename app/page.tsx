@@ -14,6 +14,7 @@ import {
   Cell,
   AreaChart,
   Area,
+  Legend,
 } from "recharts";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -43,6 +44,13 @@ interface StatsResponse {
     cityAverageSalary: ChartData[];
     companyAverageSalary: ChartData[];
     techStackSalary: ChartData[];
+    positionExperienceSalaries?: {
+      position: string;
+      data: {
+        experience: string;
+        salary: number;
+      }[];
+    }[];
     salaryRanges: {
       min: number;
       max: number;
@@ -105,20 +113,29 @@ export default function Home() {
           params.append("position", filter.position);
         if (filter.level !== "all") params.append("level", filter.level);
 
-        const [statsResponse, techStackResponse] = await Promise.all([
-          fetch(`/api/salary-stats?${params.toString()}`),
-          fetch(`/api/salary-stats/tech-stack?${params.toString()}`),
-        ]);
+        const [statsResponse, techStackResponse, positionExpResponse] =
+          await Promise.all([
+            fetch(`/api/salary-stats?${params.toString()}`),
+            fetch(`/api/salary-stats/tech-stack?${params.toString()}`),
+            fetch(`/api/salary-stats/position-experience?${params.toString()}`),
+          ]);
 
-        const [statsData, techStackData] = await Promise.all([
+        const [statsData, techStackData, positionExpData] = await Promise.all([
           statsResponse.json(),
           techStackResponse.json(),
+          positionExpResponse.json(),
         ]);
 
-        if (statsData.success && techStackData.success) {
+        if (
+          statsData.success &&
+          techStackData.success &&
+          positionExpData.success
+        ) {
           setStats({
             ...statsData.stats,
             techStackSalary: techStackData.stats.techStackSalary,
+            positionExperienceSalaries:
+              positionExpData.stats.positionExperienceSalaries,
           });
         } else {
           setError("İstatistikler yüklenirken bir hata oluştu.");
@@ -909,6 +926,75 @@ export default function Home() {
                           })}
                         </Bar>
                       </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="md:col-span-2">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Pozisyonlara ve Deneyime Göre Maaş Dağılımı
+                  </CardTitle>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">
+                    Backend, Frontend ve Full Stack pozisyonlarının deneyime
+                    göre maaş değişimi
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[400px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        margin={{ top: 20, right: 30, left: 30, bottom: 10 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          dataKey="experience"
+                          type="category"
+                          allowDuplicatedCategory={false}
+                          tick={{ fontSize: 11, fill: "#6b7280" }}
+                        />
+                        <YAxis
+                          tickFormatter={(value) =>
+                            new Intl.NumberFormat("tr-TR", {
+                              notation: "compact",
+                              compactDisplay: "short",
+                            }).format(value)
+                          }
+                          tick={{ fontSize: 11, fill: "#6b7280" }}
+                        />
+                        <Tooltip
+                          formatter={(value: number) =>
+                            new Intl.NumberFormat("tr-TR").format(value)
+                          }
+                          contentStyle={{
+                            backgroundColor: "rgba(255, 255, 255, 0.97)",
+                            borderRadius: "4px",
+                            padding: "6px",
+                            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                            border: "none",
+                            fontSize: "12px",
+                          }}
+                        />
+                        <Legend />
+                        {stats?.positionExperienceSalaries?.map(
+                          (position, index) => {
+                            const colors = ["#2563eb", "#16a34a", "#dc2626"];
+                            return (
+                              <Line
+                                key={position.position}
+                                data={position.data}
+                                dataKey="salary"
+                                name={position.position}
+                                stroke={colors[index]}
+                                strokeWidth={2}
+                                dot={{ fill: colors[index], r: 4 }}
+                                activeDot={{ r: 6, strokeWidth: 0 }}
+                              />
+                            );
+                          }
+                        )}
+                      </LineChart>
                     </ResponsiveContainer>
                   </div>
                 </CardContent>
