@@ -136,6 +136,74 @@ def analyze_salaries_by_categories():
     except Exception as e:
         print(f"Hata oluştu: {e}")
 
+def list_unique_cities():
+    # JSON dosyasının yolunu belirle
+    json_path = "public/data/yazilimci-maaslari.json"
+    
+    # Dosyanın var olup olmadığını kontrol et
+    if not os.path.exists(json_path):
+        print(f"Hata: {json_path} dosyası bulunamadı.")
+        return
+    
+    try:
+        # JSON dosyasını oku
+        with open(json_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        
+        # Tüm city değerlerini topla
+        cities = []
+        for entry in data:
+            if "city" in entry:
+                cities.append(entry["city"])
+        
+        # Benzersiz city değerlerini bul
+        unique_cities = sorted(set(cities))
+        
+        # Sonuçları yazdır
+        print("\nBenzersiz şehir değerleri:")
+        for city in unique_cities:
+            print(f"- {city}")
+        
+        print(f"\nToplam {len(unique_cities)} farklı şehir bulundu.")
+    
+    except Exception as e:
+        print(f"Hata oluştu: {e}")
+
+def list_unique_companies():
+    # JSON dosyasının yolunu belirle
+    json_path = "public/data/yazilimci-maaslari.json"
+    
+    # Dosyanın var olup olmadığını kontrol et
+    if not os.path.exists(json_path):
+        print(f"Hata: {json_path} dosyası bulunamadı.")
+        return
+    
+    try:
+        # JSON dosyasını oku
+        with open(json_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        
+        # Tüm company değerlerini topla
+        companies = []
+        for entry in data:
+            if "company" in entry:
+                companies.append(entry["company"])
+        
+        # Benzersiz company değerlerini bul
+        unique_companies = sorted(set(companies))
+        
+        # Sonuçları yazdır
+        print("\nBenzersiz şirket değerleri:")
+        for company in unique_companies:
+            print(f"- {company}")
+        
+        print(f"\nToplam {len(unique_companies)} farklı şirket bulundu.")
+    
+    except Exception as e:
+        print(f"Hata oluştu: {e}")
+
 if __name__ == "__main__":
     # list_unique_work_types()
-    analyze_salaries_by_categories()
+    # analyze_salaries_by_categories()
+    # list_unique_cities()
+    list_unique_companies()

@@ -1,216 +1,224 @@
-import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-import { NextRequest } from 'next/server';
-import { SalaryData } from '../salary-data/route';
+import { NextResponse } from "next/server";
+import data from "@/public/data/yazilimci-maaslari.json";
 
-export async function GET(request: NextRequest) {
+interface SalaryEntry {
+  position?: string;
+  level?: string;
+  currency?: string;
+  company?: string;
+  salary?: string;
+  city?: string;
+  work_type?: string;
+  experience?: string;
+  company_size?: string;
+}
+
+export async function GET(request: Request) {
   try {
-    const filePath = path.join(process.cwd(), 'public', 'data', 'yazilimci-maaslari.json');
-    
-    const fileContents = fs.readFileSync(filePath, 'utf8');
-    const data: SalaryData[] = JSON.parse(fileContents);
-    
-    const searchParams = request.nextUrl.searchParams;
-    const position = searchParams.get('position') || 'all';
-    const level = searchParams.get('level') || 'all';
-    const currency = searchParams.get('currency') || '₺ - Türk Lirası';
-    
-    const filteredData = data.filter(item => {
-      return (
-        (position === 'all' || item.position === position) &&
-        (level === 'all' || item.level === level) &&
-        (currency === 'all' || item.currency === currency)
-      );
+    const { searchParams } = new URL(request.url);
+    const position = searchParams.get("position");
+    const level = searchParams.get("level");
+
+    const filteredData = (data as SalaryEntry[]).filter((item) => {
+      const matchesPosition = !position || position === "all" || item.position === position;
+      const matchesLevel = !level || level === "all" || item.level === level;
+      const matchesCurrency = item.currency === "₺ - Türk Lirası";
+      return matchesPosition && matchesLevel && matchesCurrency;
     });
-    
-    const stats = {
-      positionAverageSalary: calculatePositionAverageSalary(filteredData),
+
+    // Ortalama maaş hesaplama
+    const calculateAvgSalary = (data: SalaryEntry[]): number => {
+      if (data.length === 0) return 0;
       
-      experienceSalaryData: calculateExperienceSalaryData(filteredData),
+      let total = 0;
+      let count = 0;
       
-      companySizeAvgSalary: calculateCompanySizeAvgSalary(filteredData),
+      data.forEach(item => {
+        if (item.salary) {
+          const salary = parseFloat(item.salary.replace(/\./g, "").replace(",", "."));
+          if (!isNaN(salary)) {
+            total += salary;
+            count += 1;
+          }
+        }
+      });
       
-      workTypeDistribution: calculateWorkTypeDistribution(filteredData),
-      
-      salaryRanges: {
-        avg: calculateAvgSalary(filteredData)
-      }
+      return count > 0 ? Math.round(total / count) : 0;
     };
-    
+
+    // Deneyime göre maaş dağılımı
+    const experienceSalary = filteredData
+      .reduce((acc: { [key: string]: { total: number; count: number } }, item) => {
+        if (item.experience && item.salary) {
+          const salary = parseFloat(item.salary.replace(/\./g, "").replace(",", "."));
+          if (!isNaN(salary)) {
+            if (!acc[item.experience]) {
+              acc[item.experience] = { total: 0, count: 0 };
+            }
+            acc[item.experience].total += salary;
+            acc[item.experience].count += 1;
+          }
+        }
+        return acc;
+      }, {});
+
+    const experienceOrder = [
+      "0 - 1 Yıl",
+      "1 - 3 Yıl",
+      "3 - 5 Yıl",
+      "5 - 7 Yıl",
+      "7 - 10 Yıl",
+      "10 - 12 Yıl",
+      "12 - 14 Yıl",
+      "15 Yıl ve üzeri"
+    ];
+
+    const experienceSalaryData = experienceOrder
+      .filter(exp => experienceSalary[exp])
+      .map(exp => ({
+        name: exp,
+        value: Math.round(experienceSalary[exp].total / experienceSalary[exp].count),
+      }));
+
+    // Şirket büyüklüğüne göre maaş dağılımı
+    const companySizeAvgSalary = filteredData
+      .reduce((acc: { [key: string]: { total: number; count: number } }, item) => {
+        if (item.company_size && item.salary) {
+          const salary = parseFloat(item.salary.replace(/\./g, "").replace(",", "."));
+          if (!isNaN(salary)) {
+            if (!acc[item.company_size]) {
+              acc[item.company_size] = { total: 0, count: 0 };
+            }
+            acc[item.company_size].total += salary;
+            acc[item.company_size].count += 1;
+          }
+        }
+        return acc;
+      }, {});
+
+    const companySizeOrder = [
+      "1 - 5 Kişi",
+      "6 - 10 Kişi",
+      "11 - 20 Kişi",
+      "21 - 50 Kişi",
+      "51 - 100 Kişi",
+      "101 - 249 Kişi",
+      "250+"
+    ];
+
+    const companySizeAvgSalaryArray = companySizeOrder
+      .filter(size => companySizeAvgSalary[size])
+      .map(size => ({
+        name: size,
+        value: Math.round(companySizeAvgSalary[size].total / companySizeAvgSalary[size].count),
+      }));
+
+    // Çalışma türüne göre dağılım
+    const workTypeDistribution = filteredData
+      .reduce((acc: { [key: string]: number }, item) => {
+        if (item.work_type) {
+          acc[item.work_type] = (acc[item.work_type] || 0) + 1;
+        }
+        return acc;
+      }, {});
+
+    const workTypeDistributionArray = Object.entries(workTypeDistribution)
+      .map(([name, value]) => ({
+        name,
+        value,
+      }))
+      .sort((a, b) => b.value - a.value);
+
+    // Pozisyonlara göre maaş dağılımı
+    const positionAverageSalary = filteredData
+      .reduce((acc: { [key: string]: { total: number; count: number } }, item) => {
+        if (item.position && item.salary) {
+          const salary = parseFloat(item.salary.replace(/\./g, "").replace(",", "."));
+          if (!isNaN(salary)) {
+            if (!acc[item.position]) {
+              acc[item.position] = { total: 0, count: 0 };
+            }
+            acc[item.position].total += salary;
+            acc[item.position].count += 1;
+          }
+        }
+        return acc;
+      }, {});
+
+    const positionAverageSalaryArray = Object.entries(positionAverageSalary)
+      .map(([name, { total, count }]) => ({
+        name,
+        value: Math.round(total / count),
+      }))
+      .sort((a, b) => b.value - a.value);
+
+    // Şirketlere göre maaş dağılımı
+    const companyAverageSalary = filteredData
+      .reduce((acc: { [key: string]: { total: number; count: number } }, item) => {
+        if (item.company && item.salary) {
+          const salary = parseFloat(item.salary.replace(/\./g, "").replace(",", "."));
+          if (!isNaN(salary)) {
+            if (!acc[item.company]) {
+              acc[item.company] = { total: 0, count: 0 };
+            }
+            acc[item.company].total += salary;
+            acc[item.company].count += 1;
+          }
+        }
+        return acc;
+      }, {});
+
+    const companyAverageSalaryArray = Object.entries(companyAverageSalary)
+      .map(([name, { total, count }]) => ({
+        name,
+        value: Math.round(total / count),
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 10);
+
+    // Şehirlere göre maaş ortalaması
+    const cityAverageSalary = filteredData
+      .reduce((acc: { [key: string]: { total: number; count: number } }, item) => {
+        if (item.city && item.salary) {
+          const salary = parseFloat(item.salary.replace(/\./g, "").replace(",", "."));
+          if (!isNaN(salary)) {
+            if (!acc[item.city]) {
+              acc[item.city] = { total: 0, count: 0 };
+            }
+            acc[item.city].total += salary;
+            acc[item.city].count += 1;
+          }
+        }
+        return acc;
+      }, {});
+
+    const cityAverageSalaryArray = Object.entries(cityAverageSalary)
+      .map(([name, { total, count }]) => ({
+        name,
+        value: Math.round(total / count),
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 10);
+
     return NextResponse.json({
       success: true,
-      stats
+      stats: {
+        positionAverageSalary: positionAverageSalaryArray,
+        experienceSalaryData,
+        companySizeAvgSalary: companySizeAvgSalaryArray,
+        workTypeDistribution: workTypeDistributionArray,
+        companyAverageSalary: companyAverageSalaryArray,
+        cityAverageSalary: cityAverageSalaryArray,
+        salaryRanges: {
+          avg: calculateAvgSalary(filteredData)
+        }
+      },
     });
   } catch (error) {
-    console.error('Stats API Error:', error);
+    console.error("API Hatası:", error);
     return NextResponse.json(
-      { success: false, error: 'İstatistikler hesaplanırken bir hata oluştu' },
+      { success: false, error: "Veriler işlenirken bir hata oluştu." },
       { status: 500 }
     );
   }
-}
-
-function calculatePositionAverageSalary(data: SalaryData[]) {
-  const positions: Record<string, { total: number; count: number }> = {};
-  
-  data.forEach(item => {
-    // Boş veya geçersiz pozisyonları atla
-    if (!item.position || item.position.trim() === '' || item.position === 'NaN') {
-      return;
-    }
-
-    const position = item.position;
-    const salaryRange = item.salary.split(' - ');
-    let avgSalary = 0;
-    
-    if (salaryRange.length > 1) {
-      const min = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
-      const max = parseFloat(salaryRange[1].replace(/\./g, '').replace(',', '.'));
-      avgSalary = (min + max) / 2;
-    } else {
-      avgSalary = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
-    }
-    
-    if (!positions[position]) {
-      positions[position] = { total: avgSalary, count: 1 };
-    } else {
-      positions[position].total += avgSalary;
-      positions[position].count += 1;
-    }
-  });
-  
-  return Object.keys(positions)
-    .filter(position => position && position.trim() !== '')
-    .map(position => ({
-      name: position,
-      value: Math.round(positions[position].total / positions[position].count)
-    }))
-    .sort((a, b) => b.value - a.value);
-}
-
-function calculateExperienceSalaryData(data: SalaryData[]) {
-  const experienceLevels: Record<string, { total: number; count: number }> = {};
-  
-  data.forEach(item => {
-    const experience = item.experience;
-    const salaryRange = item.salary.split(' - ');
-    let avgSalary = 0;
-    
-    if (salaryRange.length > 1) {
-      const min = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
-      const max = parseFloat(salaryRange[1].replace(/\./g, '').replace(',', '.'));
-      avgSalary = (min + max) / 2;
-    } else {
-      avgSalary = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
-    }
-    
-    if (!experienceLevels[experience]) {
-      experienceLevels[experience] = { total: avgSalary, count: 1 };
-    } else {
-      experienceLevels[experience].total += avgSalary;
-      experienceLevels[experience].count += 1;
-    }
-  });
-  
-  return Object.keys(experienceLevels).map(exp => ({
-    name: exp,
-    value: Math.round(experienceLevels[exp].total / experienceLevels[exp].count)
-  })).sort((a, b) => {
-    const expOrder: Record<string, number> = {
-      "0 - 1 Yıl": 1,
-      "1 - 3 Yıl": 2,
-      "3 - 5 Yıl": 3,
-      "5 - 7 Yıl": 4,
-      "7 - 10 Yıl": 5,
-      "10 - 12 Yıl": 6,
-      "12 - 14 Yıl": 7,
-      "15 Yıl ve üzeri": 8
-    };
-    return expOrder[a.name] - expOrder[b.name];
-  });
-}
-
-function calculateCompanySizeAvgSalary(data: SalaryData[]) {
-  const sizes: Record<string, { total: number; count: number }> = {};
-  
-  data.forEach(item => {
-    const size = item.company_size;
-    const salaryRange = item.salary.split(' - ');
-    let avgSalary = 0;
-    
-    if (salaryRange.length > 1) {
-      const min = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
-      const max = parseFloat(salaryRange[1].replace(/\./g, '').replace(',', '.'));
-      avgSalary = (min + max) / 2;
-    } else {
-      avgSalary = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
-    }
-    
-    if (!sizes[size]) {
-      sizes[size] = { total: avgSalary, count: 1 };
-    } else {
-      sizes[size].total += avgSalary;
-      sizes[size].count += 1;
-    }
-  });
-  
-  return Object.keys(sizes).map(size => ({
-    name: size,
-    value: Math.round(sizes[size].total / sizes[size].count)
-  })).sort((a, b) => {
-    const sizeOrder: Record<string, number> = {
-      "1 - 5 Kişi": 1,
-      "6 - 10 Kişi": 2,
-      "11 - 20 Kişi": 3,
-      "21 - 50 Kişi": 4,
-      "51 - 100 Kişi": 5,
-      "101 - 249 Kişi": 6,
-      "250+": 7
-    };
-    return sizeOrder[a.name] - sizeOrder[b.name];
-  });
-}
-
-// Çalışma türüne göre dağılım hesaplama
-function calculateWorkTypeDistribution(data: SalaryData[]) {
-  const types: Record<string, number> = {};
-  
-  data.forEach(item => {
-    const type = item.work_type;
-    if (!types[type]) {
-      types[type] = 1;
-    } else {
-      types[type] += 1;
-    }
-  });
-  
-  return Object.keys(types).map(type => ({
-    name: type,
-    value: types[type]
-  }));
-}
-
-// Ortalama maaş hesaplama
-function calculateAvgSalary(data: SalaryData[]): number {
-  if (data.length === 0) return 0;
-  
-  let total = 0;
-  
-  data.forEach(item => {
-    const salaryRange = item.salary.split(' - ');
-    let avgSalary = 0;
-    
-    if (salaryRange.length > 1) {
-      const min = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
-      const max = parseFloat(salaryRange[1].replace(/\./g, '').replace(',', '.'));
-      avgSalary = (min + max) / 2;
-    } else {
-      avgSalary = parseFloat(salaryRange[0].replace(/\./g, '').replace(',', '.'));
-    }
-    
-    total += avgSalary;
-  });
-  
-  return Math.round(total / data.length);
 } 

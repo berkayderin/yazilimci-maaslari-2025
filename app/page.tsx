@@ -39,6 +39,8 @@ interface StatsResponse {
     experienceSalaryData: ChartData[];
     companySizeAvgSalary: ChartData[];
     workTypeDistribution: ChartData[];
+    cityAverageSalary: ChartData[];
+    companyAverageSalary: ChartData[];
     salaryRanges: {
       min: number;
       max: number;
@@ -59,11 +61,9 @@ export default function Home() {
   const [options, setOptions] = useState<{
     positions: string[];
     levels: string[];
-    currencies: string[];
   }>({
     positions: ["all"],
     levels: ["all"],
-    currencies: ["all"],
   });
 
   useEffect(() => {
@@ -76,7 +76,6 @@ export default function Home() {
           setOptions({
             positions: ["all", ...data.stats.positions],
             levels: ["all", ...data.stats.levels],
-            currencies: ["all", ...data.stats.currencies],
           });
         }
       } catch (err) {
@@ -95,8 +94,6 @@ export default function Home() {
         if (filter.position !== "all")
           params.append("position", filter.position);
         if (filter.level !== "all") params.append("level", filter.level);
-        if (filter.currency !== "all")
-          params.append("currency", filter.currency);
 
         const response = await fetch(`/api/salary-stats?${params.toString()}`);
         const data = await response.json();
@@ -157,10 +154,10 @@ export default function Home() {
       <div className="p-3 md:p-4">
         <header className="max-w-6xl mx-auto mb-4 text-center">
           <h1 className="text-xl md:text-2xl font-semibold mb-2 text-gray-800 dark:text-white tracking-tight">
-            Yazılımcı Maaşları Analizi 2025
+            Türkiye&apos;de Yazılımcı Maaşları 2025
           </h1>
           <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-sm">
-            Türkiye ve yurt dışındaki yazılımcı maaşlarının analizi
+            Türkiye&apos;deki yazılımcı maaşlarının kapsamlı analizi
           </p>
         </header>
 
@@ -173,7 +170,7 @@ export default function Home() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
                       Pozisyon
@@ -216,30 +213,6 @@ export default function Home() {
                             {level === "all" ? "Tüm Seviyeler" : level}
                           </SelectItem>
                         ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
-                      Para Birimi
-                    </label>
-                    <Select
-                      onValueChange={(value) =>
-                        setFilter((prev) => ({ ...prev, currency: value }))
-                      }
-                      defaultValue={filter.currency}
-                    >
-                      <SelectTrigger className="w-full h-8 text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-none focus:ring-1 focus:ring-blue-500">
-                        <SelectValue placeholder="Para birimi seçin" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tüm Para Birimleri</SelectItem>
-                        <SelectItem value="₺ - Türk Lirası">
-                          ₺ - Türk Lirası
-                        </SelectItem>
-                        <SelectItem value="$ - Dolar">$ - Dolar</SelectItem>
-                        <SelectItem value="€ - Euro">€ - Euro</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -589,6 +562,178 @@ export default function Home() {
                               "#3b82f6",
                               "#60a5fa",
                               "#93c5fd", // En açık mavi
+                            ];
+
+                            return (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={colors[index % colors.length]}
+                              />
+                            );
+                          })}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Şehirlere Göre Maaş Dağılımı
+                  </CardTitle>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">
+                    En yüksek ortalama maaşa sahip 10 şehir
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[240px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={stats.cityAverageSalary}
+                        layout="vertical"
+                        margin={{ top: 5, right: 30, left: 60, bottom: 5 }}
+                      >
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="#eee"
+                          opacity={0.3}
+                          horizontal={false}
+                        />
+                        <XAxis
+                          type="number"
+                          tick={{ fontSize: 10, fill: "#6b7280" }}
+                          tickFormatter={(value) =>
+                            new Intl.NumberFormat("tr-TR", {
+                              notation: "compact",
+                              compactDisplay: "short",
+                            }).format(value)
+                          }
+                        />
+                        <YAxis
+                          dataKey="name"
+                          type="category"
+                          tick={{ fontSize: 10, fill: "#6b7280" }}
+                          width={100}
+                        />
+                        <Tooltip
+                          formatter={(value: number) =>
+                            new Intl.NumberFormat("tr-TR").format(value)
+                          }
+                          contentStyle={{
+                            backgroundColor: "rgba(255, 255, 255, 0.97)",
+                            borderRadius: "4px",
+                            padding: "6px",
+                            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                            border: "none",
+                            fontSize: "12px",
+                          }}
+                          labelStyle={{
+                            fontWeight: "500",
+                            marginBottom: "4px",
+                            fontSize: "12px",
+                          }}
+                        />
+                        <Bar
+                          dataKey="value"
+                          name="Ortalama Maaş"
+                          fill="#3b82f6"
+                          radius={[0, 2, 2, 0]}
+                        >
+                          {stats.cityAverageSalary.map((entry, index) => {
+                            const colors = [
+                              "#1e40af",
+                              "#2563eb",
+                              "#3b82f6",
+                              "#60a5fa",
+                              "#93c5fd",
+                            ];
+
+                            return (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={colors[index % colors.length]}
+                              />
+                            );
+                          })}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Şirketlere Göre Maaş Dağılımı
+                  </CardTitle>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">
+                    En yüksek ortalama maaşa sahip 10 şirket
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[240px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={stats.companyAverageSalary}
+                        layout="vertical"
+                        margin={{ top: 5, right: 30, left: 60, bottom: 5 }}
+                      >
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="#eee"
+                          opacity={0.3}
+                          horizontal={false}
+                        />
+                        <XAxis
+                          type="number"
+                          tick={{ fontSize: 10, fill: "#6b7280" }}
+                          tickFormatter={(value) =>
+                            new Intl.NumberFormat("tr-TR", {
+                              notation: "compact",
+                              compactDisplay: "short",
+                            }).format(value)
+                          }
+                        />
+                        <YAxis
+                          dataKey="name"
+                          type="category"
+                          tick={{ fontSize: 10, fill: "#6b7280" }}
+                          width={100}
+                        />
+                        <Tooltip
+                          formatter={(value: number) =>
+                            new Intl.NumberFormat("tr-TR").format(value)
+                          }
+                          contentStyle={{
+                            backgroundColor: "rgba(255, 255, 255, 0.97)",
+                            borderRadius: "4px",
+                            padding: "6px",
+                            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                            border: "none",
+                            fontSize: "12px",
+                          }}
+                          labelStyle={{
+                            fontWeight: "500",
+                            marginBottom: "4px",
+                            fontSize: "12px",
+                          }}
+                        />
+                        <Bar
+                          dataKey="value"
+                          name="Ortalama Maaş"
+                          fill="#3b82f6"
+                          radius={[0, 2, 2, 0]}
+                        >
+                          {stats.companyAverageSalary.map((entry, index) => {
+                            const colors = [
+                              "#1e40af",
+                              "#2563eb",
+                              "#3b82f6",
+                              "#60a5fa",
+                              "#93c5fd",
                             ];
 
                             return (
