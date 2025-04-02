@@ -19,7 +19,6 @@ import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -118,8 +117,10 @@ export default function Home() {
     fetchStats();
   }, [filter]);
 
-  const COLORS = ["#3B82F6", "#E5E7EB"];
-  const PRIMARY_COLOR = "#3B82F6";
+  const getCurrencySymbol = (currencyString: string) => {
+    if (currencyString === "all") return "";
+    return currencyString.split(" ")[0];
+  };
 
   if (loading && !stats)
     return (
@@ -152,24 +153,24 @@ export default function Home() {
     );
 
   return (
-    <div className="min-h-screen p-4 md:p-6 bg-white dark:bg-gray-950 font-sans">
-      <header className="max-w-4xl mx-auto mb-10 text-center">
-        <h1 className="text-2xl md:text-3xl font-medium mb-2 text-gray-900 dark:text-white tracking-tight">
+    <div className="p-3 md:p-4 bg-gray-50 dark:bg-gray-900 font-sans">
+      <header className="max-w-6xl mx-auto mb-4 text-center">
+        <h1 className="text-xl md:text-2xl font-semibold mb-2 text-gray-800 dark:text-white tracking-tight">
           Yazılımcı Maaşları Analizi
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-sm">
+        <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-sm">
           Türkiye ve yurt dışındaki yazılımcı maaşlarının analizi
         </p>
       </header>
 
-      <div className="max-w-4xl mx-auto mb-10">
-        <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-md mb-6">
-          <h2 className="text-base font-medium mb-4 text-gray-800 dark:text-gray-200">
+      <div className="max-w-6xl mx-auto mb-4">
+        <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm mb-4">
+          <h2 className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-200">
             Filtreler
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-normal text-gray-500 dark:text-gray-400 mb-1">
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
                 Pozisyon
               </label>
               <Select
@@ -178,7 +179,7 @@ export default function Home() {
                 }
                 defaultValue={filter.position}
               >
-                <SelectTrigger className="w-full h-9 text-sm border-0 bg-white dark:bg-gray-800 shadow-none">
+                <SelectTrigger className="w-full h-8 text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-none focus:ring-1 focus:ring-blue-500">
                   <SelectValue placeholder="Pozisyon seçin" />
                 </SelectTrigger>
                 <SelectContent>
@@ -192,7 +193,7 @@ export default function Home() {
             </div>
 
             <div>
-              <label className="block text-xs font-normal text-gray-500 dark:text-gray-400 mb-1">
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
                 Seviye
               </label>
               <Select
@@ -201,7 +202,7 @@ export default function Home() {
                 }
                 defaultValue={filter.level}
               >
-                <SelectTrigger className="w-full h-9 text-sm border-0 bg-white dark:bg-gray-800 shadow-none">
+                <SelectTrigger className="w-full h-8 text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-none focus:ring-1 focus:ring-blue-500">
                   <SelectValue placeholder="Seviye seçin" />
                 </SelectTrigger>
                 <SelectContent>
@@ -215,7 +216,7 @@ export default function Home() {
             </div>
 
             <div>
-              <label className="block text-xs font-normal text-gray-500 dark:text-gray-400 mb-1">
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
                 Para Birimi
               </label>
               <Select
@@ -224,15 +225,16 @@ export default function Home() {
                 }
                 defaultValue={filter.currency}
               >
-                <SelectTrigger className="w-full h-9 text-sm border-0 bg-white dark:bg-gray-800 shadow-none">
+                <SelectTrigger className="w-full h-8 text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-none focus:ring-1 focus:ring-blue-500">
                   <SelectValue placeholder="Para birimi seçin" />
                 </SelectTrigger>
                 <SelectContent>
-                  {options.currencies.map((currency) => (
-                    <SelectItem key={currency} value={currency}>
-                      {currency === "all" ? "Tüm Para Birimleri" : currency}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="all">Tüm Para Birimleri</SelectItem>
+                  <SelectItem value="₺ - Türk Lirası">
+                    ₺ - Türk Lirası
+                  </SelectItem>
+                  <SelectItem value="$ - Dolar">$ - Dolar</SelectItem>
+                  <SelectItem value="€ - Euro">€ - Euro</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -241,16 +243,17 @@ export default function Home() {
       </div>
 
       {stats && (
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-            <Card className="overflow-hidden bg-white dark:bg-gray-900 border-0 shadow-none">
-              <CardHeader className="pb-1 border-b-0 pt-3 px-3">
-                <CardTitle className="text-base text-gray-900 dark:text-white font-normal">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-3 gap-3 mb-4">
+            <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm rounded-lg overflow-hidden">
+              <CardHeader className="pb-2 border-b-0 pt-3 px-3">
+                <CardTitle className="text-sm text-gray-700 dark:text-gray-200 font-medium">
                   Ortalama Maaş
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-2 px-3 pb-3">
-                <p className="text-2xl font-medium text-blue-500 dark:text-blue-400">
+              <CardContent className="pt-0 px-3 pb-3">
+                <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                  {getCurrencySymbol(filter.currency)}{" "}
                   {new Intl.NumberFormat("tr-TR").format(
                     stats.salaryRanges.avg
                   )}
@@ -258,14 +261,15 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="overflow-hidden bg-white dark:bg-gray-900 border-0 shadow-none">
-              <CardHeader className="pb-1 border-b-0 pt-3 px-3">
-                <CardTitle className="text-base text-gray-900 dark:text-white font-normal">
+            <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm rounded-lg overflow-hidden">
+              <CardHeader className="pb-2 border-b-0 pt-3 px-3">
+                <CardTitle className="text-sm text-gray-700 dark:text-gray-200 font-medium">
                   Minimum Maaş
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-2 px-3 pb-3">
-                <p className="text-2xl font-medium text-blue-500 dark:text-blue-400">
+              <CardContent className="pt-0 px-3 pb-3">
+                <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                  {getCurrencySymbol(filter.currency)}{" "}
                   {new Intl.NumberFormat("tr-TR").format(
                     stats.salaryRanges.min
                   )}
@@ -273,14 +277,15 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="overflow-hidden bg-white dark:bg-gray-900 border-0 shadow-none">
-              <CardHeader className="pb-1 border-b-0 pt-3 px-3">
-                <CardTitle className="text-base text-gray-900 dark:text-white font-normal">
+            <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm rounded-lg overflow-hidden">
+              <CardHeader className="pb-2 border-b-0 pt-3 px-3">
+                <CardTitle className="text-sm text-gray-700 dark:text-gray-200 font-medium">
                   Maksimum Maaş
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-2 px-3 pb-3">
-                <p className="text-2xl font-medium text-blue-500 dark:text-blue-400">
+              <CardContent className="pt-0 px-3 pb-3">
+                <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                  {getCurrencySymbol(filter.currency)}{" "}
                   {new Intl.NumberFormat("tr-TR").format(
                     stats.salaryRanges.max
                   )}
@@ -289,318 +294,302 @@ export default function Home() {
             </Card>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-md p-4 mb-10">
-            <Tabs defaultValue="position" className="w-full">
-              <TabsList className="w-full mb-6 grid grid-cols-1 md:grid-cols-4 gap-1 bg-transparent">
-                <TabsTrigger
-                  value="position"
-                  className="text-sm data-[state=active]:bg-gray-100 data-[state=active]:text-blue-500 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-blue-400"
-                >
-                  Pozisyona Göre
-                </TabsTrigger>
-                <TabsTrigger
-                  value="experience"
-                  className="text-sm data-[state=active]:bg-gray-100 data-[state=active]:text-blue-500 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-blue-400"
-                >
-                  Deneyime Göre
-                </TabsTrigger>
-                <TabsTrigger
-                  value="company"
-                  className="text-sm data-[state=active]:bg-gray-100 data-[state=active]:text-blue-500 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-blue-400"
-                >
-                  Şirket Büyüklüğüne Göre
-                </TabsTrigger>
-                <TabsTrigger
-                  value="worktype"
-                  className="text-sm data-[state=active]:bg-gray-100 data-[state=active]:text-blue-500 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-blue-400"
-                >
-                  Çalışma Türüne Göre
-                </TabsTrigger>
-              </TabsList>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3">
+              <h3 className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">
+                Pozisyona Göre Ortalama Maaş
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 text-xs mb-2">
+                Yazılım pozisyonlarında ortalama maaş dağılımı
+              </p>
+              <div className="h-[210px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={stats.positionAverageSalary.slice(0, 8)}
+                    margin={{ top: 5, right: 10, left: 10, bottom: 50 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#eee"
+                      opacity={0.3}
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fontSize: 10, fill: "#6b7280" }}
+                      angle={-45}
+                      textAnchor="end"
+                      height={60}
+                      tickMargin={10}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 10, fill: "#6b7280" }}
+                      tickFormatter={(value) =>
+                        new Intl.NumberFormat("tr-TR", {
+                          notation: "compact",
+                          compactDisplay: "short",
+                        }).format(value)
+                      }
+                    />
+                    <Tooltip
+                      formatter={(value: number) =>
+                        new Intl.NumberFormat("tr-TR").format(value)
+                      }
+                      contentStyle={{
+                        backgroundColor: "rgba(255, 255, 255, 0.97)",
+                        borderRadius: "4px",
+                        padding: "6px",
+                        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                        border: "none",
+                        fontSize: "12px",
+                      }}
+                      labelStyle={{
+                        fontWeight: "500",
+                        marginBottom: "4px",
+                        fontSize: "12px",
+                      }}
+                    />
+                    <Bar
+                      dataKey="value"
+                      name="Ortalama Maaş"
+                      fill="#3b82f6"
+                      radius={[2, 2, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
 
-              <TabsContent value="position" className="mt-0">
-                <div className="p-2 bg-white dark:bg-gray-900 rounded-md mb-4">
-                  <h3 className="text-base font-medium mb-1 text-gray-900 dark:text-white">
-                    Pozisyona Göre Ortalama Maaş
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400 text-xs mb-4">
-                    Yazılım pozisyonlarında ortalama maaş dağılımı
-                  </p>
-                  <div className="h-[400px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={stats.positionAverageSalary.slice(0, 8)}
-                        margin={{ top: 10, right: 20, left: 20, bottom: 80 }}
-                      >
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          stroke="#eee"
-                          opacity={0.3}
-                          vertical={false}
-                        />
-                        <XAxis
-                          dataKey="name"
-                          tick={{ fontSize: 11, fill: "#888" }}
-                          angle={-45}
-                          textAnchor="end"
-                          height={80}
-                          tickMargin={20}
-                        />
-                        <YAxis
-                          tick={{ fontSize: 11, fill: "#888" }}
-                          tickFormatter={(value) =>
-                            new Intl.NumberFormat("tr-TR", {
-                              notation: "compact",
-                              compactDisplay: "short",
-                            }).format(value)
-                          }
-                        />
-                        <Tooltip
-                          formatter={(value: number) =>
-                            new Intl.NumberFormat("tr-TR").format(value)
-                          }
-                          contentStyle={{
-                            backgroundColor: "rgba(255, 255, 255, 0.95)",
-                            borderRadius: "4px",
-                            padding: "8px",
-                            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
-                            border: "none",
-                          }}
-                          labelStyle={{
-                            fontWeight: "normal",
-                            marginBottom: "4px",
-                          }}
-                        />
-                        <Bar
-                          dataKey="value"
-                          name="Ortalama Maaş"
-                          fill={PRIMARY_COLOR}
-                          radius={[2, 2, 0, 0]}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </TabsContent>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3">
+              <h3 className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">
+                Deneyime Göre Maaş Dağılımı
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 text-xs mb-2">
+                Deneyim yılına göre maaş değişimi
+              </p>
+              <div className="h-[210px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={stats.experienceSalaryData}
+                    margin={{ top: 5, right: 10, left: 10, bottom: 50 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#eee"
+                      opacity={0.3}
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fontSize: 10, fill: "#6b7280" }}
+                      angle={-45}
+                      textAnchor="end"
+                      height={60}
+                      tickMargin={10}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 10, fill: "#6b7280" }}
+                      tickFormatter={(value) =>
+                        new Intl.NumberFormat("tr-TR", {
+                          notation: "compact",
+                          compactDisplay: "short",
+                        }).format(value)
+                      }
+                    />
+                    <Tooltip
+                      formatter={(value: number) =>
+                        new Intl.NumberFormat("tr-TR").format(value)
+                      }
+                      contentStyle={{
+                        backgroundColor: "rgba(255, 255, 255, 0.97)",
+                        borderRadius: "4px",
+                        padding: "6px",
+                        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                        border: "none",
+                        fontSize: "12px",
+                      }}
+                      labelStyle={{
+                        fontWeight: "500",
+                        marginBottom: "4px",
+                        fontSize: "12px",
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      name="Ortalama Maaş"
+                      stroke="#3b82f6"
+                      strokeWidth={2}
+                      dot={{
+                        r: 3,
+                        fill: "#3b82f6",
+                        strokeWidth: 0,
+                      }}
+                      activeDot={{ r: 4, strokeWidth: 0 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
 
-              <TabsContent value="experience" className="mt-0">
-                <div className="p-2 bg-white dark:bg-gray-900 rounded-md mb-4">
-                  <h3 className="text-base font-medium mb-1 text-gray-900 dark:text-white">
-                    Deneyime Göre Maaş Dağılımı
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400 text-xs mb-4">
-                    Deneyim yılına göre maaş değişimi
-                  </p>
-                  <div className="h-[400px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={stats.experienceSalaryData}
-                        margin={{ top: 10, right: 20, left: 20, bottom: 80 }}
-                      >
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          stroke="#eee"
-                          opacity={0.3}
-                          vertical={false}
-                        />
-                        <XAxis
-                          dataKey="name"
-                          tick={{ fontSize: 11, fill: "#888" }}
-                          angle={-45}
-                          textAnchor="end"
-                          height={80}
-                          tickMargin={20}
-                        />
-                        <YAxis
-                          tick={{ fontSize: 11, fill: "#888" }}
-                          tickFormatter={(value) =>
-                            new Intl.NumberFormat("tr-TR", {
-                              notation: "compact",
-                              compactDisplay: "short",
-                            }).format(value)
-                          }
-                        />
-                        <Tooltip
-                          formatter={(value: number) =>
-                            new Intl.NumberFormat("tr-TR").format(value)
-                          }
-                          contentStyle={{
-                            backgroundColor: "rgba(255, 255, 255, 0.95)",
-                            borderRadius: "4px",
-                            padding: "8px",
-                            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
-                            border: "none",
-                          }}
-                          labelStyle={{
-                            fontWeight: "normal",
-                            marginBottom: "4px",
-                          }}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="value"
-                          name="Ortalama Maaş"
-                          stroke={PRIMARY_COLOR}
-                          strokeWidth={2}
-                          dot={{
-                            r: 4,
-                            fill: PRIMARY_COLOR,
-                            strokeWidth: 0,
-                          }}
-                          activeDot={{ r: 6, strokeWidth: 0 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </TabsContent>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3">
+              <h3 className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">
+                Şirket Büyüklüğüne Göre Maaş
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 text-xs mb-2">
+                Şirket büyüklüğüne göre ortalama maaş değişimi
+              </p>
+              <div className="h-[210px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={stats.companySizeAvgSalary}
+                    margin={{ top: 5, right: 10, left: 10, bottom: 25 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#eee"
+                      opacity={0.3}
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fontSize: 10, fill: "#6b7280" }}
+                      tickMargin={5}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 10, fill: "#6b7280" }}
+                      tickFormatter={(value) =>
+                        new Intl.NumberFormat("tr-TR", {
+                          notation: "compact",
+                          compactDisplay: "short",
+                        }).format(value)
+                      }
+                    />
+                    <Tooltip
+                      formatter={(value: number) =>
+                        new Intl.NumberFormat("tr-TR").format(value)
+                      }
+                      contentStyle={{
+                        backgroundColor: "rgba(255, 255, 255, 0.97)",
+                        borderRadius: "4px",
+                        padding: "6px",
+                        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                        border: "none",
+                        fontSize: "12px",
+                      }}
+                      labelStyle={{
+                        fontWeight: "500",
+                        marginBottom: "4px",
+                        fontSize: "12px",
+                      }}
+                    />
+                    <Bar
+                      dataKey="value"
+                      name="Ortalama Maaş"
+                      fill="#3b82f6"
+                      radius={[2, 2, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
 
-              <TabsContent value="company" className="mt-0">
-                <div className="p-2 bg-white dark:bg-gray-900 rounded-md mb-4">
-                  <h3 className="text-base font-medium mb-1 text-gray-900 dark:text-white">
-                    Şirket Büyüklüğüne Göre Maaş
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400 text-xs mb-4">
-                    Şirket büyüklüğüne göre ortalama maaş değişimi
-                  </p>
-                  <div className="h-[400px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={stats.companySizeAvgSalary}
-                        margin={{ top: 10, right: 20, left: 20, bottom: 40 }}
-                      >
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          stroke="#eee"
-                          opacity={0.3}
-                          vertical={false}
-                        />
-                        <XAxis
-                          dataKey="name"
-                          tick={{ fontSize: 11, fill: "#888" }}
-                          tickMargin={10}
-                        />
-                        <YAxis
-                          tick={{ fontSize: 11, fill: "#888" }}
-                          tickFormatter={(value) =>
-                            new Intl.NumberFormat("tr-TR", {
-                              notation: "compact",
-                              compactDisplay: "short",
-                            }).format(value)
-                          }
-                        />
-                        <Tooltip
-                          formatter={(value: number) =>
-                            new Intl.NumberFormat("tr-TR").format(value)
-                          }
-                          contentStyle={{
-                            backgroundColor: "rgba(255, 255, 255, 0.95)",
-                            borderRadius: "4px",
-                            padding: "8px",
-                            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
-                            border: "none",
-                          }}
-                          labelStyle={{
-                            fontWeight: "normal",
-                            marginBottom: "4px",
-                          }}
-                        />
-                        <Bar
-                          dataKey="value"
-                          name="Ortalama Maaş"
-                          fill={PRIMARY_COLOR}
-                          radius={[2, 2, 0, 0]}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </TabsContent>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3">
+              <h3 className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">
+                Çalışma Türüne Göre Dağılım
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 text-xs mb-2">
+                Remote, Ofis ve Hibrit çalışanların dağılımı
+              </p>
+              <div className="h-[210px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                    <Pie
+                      data={stats.workTypeDistribution}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={true}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                      nameKey="name"
+                      label={({ name, percent }) =>
+                        `${name.split(" ")[0]}: ${(percent * 100).toFixed(0)}%`
+                      }
+                      paddingAngle={2}
+                    >
+                      {stats.workTypeDistribution.map((entry, index) => {
+                        // Çalışma türlerine göre renk ataması
+                        const colors = {
+                          Remote: "#3b82f6", // Mavi
+                          Ofis: "#ef4444", // Kırmızı
+                          Hibrit: "#10b981", // Yeşil
+                          Şu: "#f59e0b", // Turuncu - "Şu an" ile başlayan ifadeler için
+                        };
 
-              <TabsContent value="worktype" className="mt-0">
-                <div className="p-2 bg-white dark:bg-gray-900 rounded-md mb-4">
-                  <h3 className="text-base font-medium mb-1 text-gray-900 dark:text-white">
-                    Çalışma Türüne Göre Dağılım
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400 text-xs mb-4">
-                    Remote, Ofis ve Hibrit çalışanların dağılımı
-                  </p>
-                  <div className="h-[400px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart
-                        margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
-                      >
-                        <Pie
-                          data={stats.workTypeDistribution}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          outerRadius={120}
-                          fill="#8884d8"
-                          dataKey="value"
-                          nameKey="name"
-                          label={({ name, percent }) =>
-                            `${name}: ${(percent * 100).toFixed(0)}%`
-                          }
-                          paddingAngle={1}
-                        >
-                          {stats.workTypeDistribution.map((entry, index) => (
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={COLORS[index % COLORS.length]}
-                              stroke="none"
-                            />
-                          ))}
-                        </Pie>
-                        <Tooltip
-                          formatter={(value: number) => `${value} kişi`}
-                          contentStyle={{
-                            backgroundColor: "rgba(255, 255, 255, 0.95)",
-                            borderRadius: "4px",
-                            padding: "8px",
-                            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
-                            border: "none",
-                          }}
-                          labelStyle={{
-                            fontWeight: "normal",
-                            marginBottom: "4px",
-                          }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
+                        // Çalışma türüne göre renk seç
+                        const colorKey =
+                          (Object.keys(colors).find((key) =>
+                            entry.name.startsWith(key)
+                          ) as keyof typeof colors) ||
+                          ("Remote" as keyof typeof colors);
+
+                        return (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={colors[colorKey]}
+                            stroke="#fff"
+                            strokeWidth={1}
+                          />
+                        );
+                      })}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value: number) => `${value} kişi`}
+                      contentStyle={{
+                        backgroundColor: "rgba(255, 255, 255, 0.97)",
+                        borderRadius: "4px",
+                        padding: "6px",
+                        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                        border: "none",
+                        fontSize: "12px",
+                      }}
+                      labelStyle={{
+                        fontWeight: "500",
+                        marginBottom: "4px",
+                        fontSize: "12px",
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      <footer className="max-w-4xl mx-auto mt-10 pb-4 text-center border-t border-gray-100 dark:border-gray-900 pt-4">
-        <p className="text-gray-400 dark:text-gray-500 text-xs">
+      <footer className="max-w-6xl mx-auto pb-2 text-center border-t border-gray-200 dark:border-gray-700 pt-2">
+        <p className="text-gray-500 dark:text-gray-400 text-xs">
           Veri son güncelleme:{" "}
           {format(new Date(), "d MMMM yyyy", { locale: tr })}
         </p>
-        <p className="text-gray-400 dark:text-gray-500 text-xs mt-2">
-          Veri kaynağı:{" "}
+        <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
           <a
             href="https://github.com/oncekiyazilimci/2025-yazilim-sektoru-maaslari"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-400 hover:underline"
+            className="text-blue-500 hover:underline font-medium"
           >
-            github.com/oncekiyazilimci
-          </a>
-        </p>
-        <p className="text-gray-400 dark:text-gray-500 text-xs mt-2">
-          Geliştirici:{" "}
+            Veri Kaynağı
+          </a>{" "}
+          &middot;{" "}
           <a
             href="https://github.com/berkayderin"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-400 hover:underline"
+            className="text-blue-500 hover:underline font-medium"
           >
-            Berkay Derin
+            Geliştirici
           </a>
         </p>
       </footer>
