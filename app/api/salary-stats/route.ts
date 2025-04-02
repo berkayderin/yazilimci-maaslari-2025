@@ -55,6 +55,11 @@ function calculatePositionAverageSalary(data: SalaryData[]) {
   const positions: Record<string, { total: number; count: number }> = {};
   
   data.forEach(item => {
+    // Boş veya geçersiz pozisyonları atla
+    if (!item.position || item.position.trim() === '' || item.position === 'NaN') {
+      return;
+    }
+
     const position = item.position;
     const salaryRange = item.salary.split(' - ');
     let avgSalary = 0;
@@ -75,10 +80,13 @@ function calculatePositionAverageSalary(data: SalaryData[]) {
     }
   });
   
-  return Object.keys(positions).map(position => ({
-    name: position,
-    value: Math.round(positions[position].total / positions[position].count)
-  })).sort((a, b) => b.value - a.value);
+  return Object.keys(positions)
+    .filter(position => position && position.trim() !== '')
+    .map(position => ({
+      name: position,
+      value: Math.round(positions[position].total / positions[position].count)
+    }))
+    .sort((a, b) => b.value - a.value);
 }
 
 function calculateExperienceSalaryData(data: SalaryData[]) {

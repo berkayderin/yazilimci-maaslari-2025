@@ -6,14 +6,14 @@ import {
   Bar,
   LineChart,
   Line,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Cell,
+  AreaChart,
+  Area,
 } from "recharts";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -247,20 +247,6 @@ export default function Home() {
               <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm rounded-lg overflow-hidden">
                 <CardHeader className="pb-0 pt-3 px-4">
                   <div className="flex items-center space-x-2">
-                    <svg
-                      className="w-4 h-4 text-blue-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
                     <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
                       Ortalama Maaş
                     </CardTitle>
@@ -296,7 +282,7 @@ export default function Home() {
 
         {stats && (
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3">
                 <h3 className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">
                   Pozisyona Göre Ortalama Maaş
@@ -306,10 +292,30 @@ export default function Home() {
                 </p>
                 <div className="h-[240px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
+                    <AreaChart
                       data={stats.positionAverageSalary.slice(0, 8)}
-                      margin={{ top: 5, right: 10, left: 10, bottom: 50 }}
+                      margin={{ top: 10, right: 10, left: 10, bottom: 60 }}
                     >
+                      <defs>
+                        <linearGradient
+                          id="colorValue"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="5%"
+                            stopColor="#3b82f6"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="#3b82f6"
+                            stopOpacity={0.1}
+                          />
+                        </linearGradient>
+                      </defs>
                       <CartesianGrid
                         strokeDasharray="3 3"
                         stroke="#eee"
@@ -351,13 +357,16 @@ export default function Home() {
                           fontSize: "12px",
                         }}
                       />
-                      <Bar
+                      <Area
+                        type="monotone"
                         dataKey="value"
                         name="Ortalama Maaş"
-                        fill="#3b82f6"
-                        radius={[2, 2, 0, 0]}
+                        stroke="#3b82f6"
+                        fillOpacity={1}
+                        fill="url(#colorValue)"
+                        strokeWidth={2}
                       />
-                    </BarChart>
+                    </AreaChart>
                   </ResponsiveContainer>
                 </div>
               </div>
@@ -505,51 +514,37 @@ export default function Home() {
                 </p>
                 <div className="h-[240px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <PieChart margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                      <Pie
-                        data={stats.workTypeDistribution}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={true}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        nameKey="name"
-                        label={({ name, percent }) =>
-                          `${name.split(" ")[0]}: ${(percent * 100).toFixed(
-                            0
-                          )}%`
+                    <BarChart
+                      data={stats.workTypeDistribution}
+                      layout="vertical"
+                      margin={{ top: 5, right: 30, left: 60, bottom: 5 }}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="#eee"
+                        opacity={0.3}
+                        horizontal={false}
+                      />
+                      <XAxis
+                        type="number"
+                        tick={{ fontSize: 10, fill: "#6b7280" }}
+                        tickFormatter={(value) =>
+                          new Intl.NumberFormat("tr-TR", {
+                            notation: "compact",
+                            compactDisplay: "short",
+                          }).format(value)
                         }
-                        paddingAngle={2}
-                      >
-                        {stats.workTypeDistribution.map((entry, index) => {
-                          // Çalışma türlerine göre renk ataması
-                          const colors = {
-                            Remote: "#3b82f6", // Mavi
-                            Ofis: "#ef4444", // Kırmızı
-                            Hibrit: "#10b981", // Yeşil
-                            Şu: "#f59e0b", // Turuncu - "Şu an" ile başlayan ifadeler için
-                          };
-
-                          // Çalışma türüne göre renk seç
-                          const colorKey =
-                            (Object.keys(colors).find((key) =>
-                              entry.name.startsWith(key)
-                            ) as keyof typeof colors) ||
-                            ("Remote" as keyof typeof colors);
-
-                          return (
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={colors[colorKey]}
-                              stroke="#fff"
-                              strokeWidth={1}
-                            />
-                          );
-                        })}
-                      </Pie>
+                      />
+                      <YAxis
+                        dataKey="name"
+                        type="category"
+                        tick={{ fontSize: 10, fill: "#6b7280" }}
+                        width={100}
+                      />
                       <Tooltip
-                        formatter={(value: number) => `${value} kişi`}
+                        formatter={(value: number) =>
+                          new Intl.NumberFormat("tr-TR").format(value)
+                        }
                         contentStyle={{
                           backgroundColor: "rgba(255, 255, 255, 0.97)",
                           borderRadius: "4px",
@@ -564,7 +559,30 @@ export default function Home() {
                           fontSize: "12px",
                         }}
                       />
-                    </PieChart>
+                      <Bar
+                        dataKey="value"
+                        name="Çalışan Sayısı"
+                        fill="#3b82f6"
+                        radius={[0, 2, 2, 0]}
+                      >
+                        {stats.workTypeDistribution.map((entry, index) => {
+                          const colors = [
+                            "#1e40af", // En koyu mavi
+                            "#2563eb",
+                            "#3b82f6",
+                            "#60a5fa",
+                            "#93c5fd", // En açık mavi
+                          ];
+
+                          return (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={colors[index % colors.length]}
+                            />
+                          );
+                        })}
+                      </Bar>
+                    </BarChart>
                   </ResponsiveContainer>
                 </div>
               </div>
