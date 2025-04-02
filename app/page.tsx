@@ -440,20 +440,17 @@ export default function Home() {
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         data={stats.companySizeAvgSalary}
-                        margin={{ top: 5, right: 10, left: 10, bottom: 25 }}
+                        layout="vertical"
+                        margin={{ top: 5, right: 30, left: 60, bottom: 5 }}
                       >
                         <CartesianGrid
                           strokeDasharray="3 3"
                           stroke="#eee"
                           opacity={0.3}
-                          vertical={false}
+                          horizontal={false}
                         />
                         <XAxis
-                          dataKey="name"
-                          tick={{ fontSize: 10, fill: "#6b7280" }}
-                          tickMargin={5}
-                        />
-                        <YAxis
+                          type="number"
                           tick={{ fontSize: 10, fill: "#6b7280" }}
                           tickFormatter={(value) =>
                             new Intl.NumberFormat("tr-TR", {
@@ -461,6 +458,12 @@ export default function Home() {
                               compactDisplay: "short",
                             }).format(value)
                           }
+                        />
+                        <YAxis
+                          dataKey="name"
+                          type="category"
+                          tick={{ fontSize: 10, fill: "#6b7280" }}
+                          width={100}
                         />
                         <Tooltip
                           formatter={(value: number) =>
@@ -484,8 +487,27 @@ export default function Home() {
                           dataKey="value"
                           name="Ortalama Maaş"
                           fill="#3b82f6"
-                          radius={[2, 2, 0, 0]}
-                        />
+                          radius={[0, 2, 2, 0]}
+                        >
+                          {stats.companySizeAvgSalary.map((entry, index) => {
+                            const colors = [
+                              "#1e40af",
+                              "#2563eb",
+                              "#3b82f6",
+                              "#60a5fa",
+                              "#93c5fd",
+                              "#bfdbfe",
+                              "#dbeafe",
+                            ];
+
+                            return (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={colors[index % colors.length]}
+                              />
+                            );
+                          })}
+                        </Bar>
                       </BarChart>
                     </ResponsiveContainer>
                   </div>

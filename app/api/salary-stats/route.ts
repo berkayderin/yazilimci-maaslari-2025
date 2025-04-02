@@ -177,9 +177,22 @@ export async function GET(request: Request) {
       .slice(0, 10);
 
     // Şehirlere göre maaş ortalaması
+    const turkishCities = [
+      "Adana", "Adıyaman", "Afyonkarahisar", "Aksaray", "Amasya", "Ankara", "Antalya",
+      "Ardahan", "Artvin", "Aydın", "Ağrı", "Balıkesir", "Batman", "Bilecik", "Bitlis",
+      "Bolu", "Bursa", "Denizli", "Diyarbakır", "Düzce", "Edirne", "Elazığ", "Erzincan",
+      "Erzurum", "Eskişehir", "Gaziantep", "Giresun", "Hakkari", "Hatay", "Isparta",
+      "Iğdır", "Kahramanmaraş", "Karabük", "Karaman", "Kars", "Kastamonu", "Kayseri",
+      "Kilis", "Kocaeli", "Konya", "Kütahya", "Kırklareli", "Kırşehir", "Malatya",
+      "Manisa", "Mardin", "Mersin", "Muğla", "Muş", "Nevşehir", "Niğde", "Ordu",
+      "Osmaniye", "Rize", "Sakarya", "Samsun", "Sinop", "Sivas", "Tekirdağ", "Tokat",
+      "Trabzon", "Uşak", "Van", "Yalova", "Yozgat", "Zonguldak", "Çanakkale", "Çorum",
+      "İstanbul", "İzmir", "Şanlıurfa"
+    ];
+
     const cityAverageSalary = filteredData
       .reduce((acc: { [key: string]: { total: number; count: number } }, item) => {
-        if (item.city && item.salary) {
+        if (item.city && item.salary && turkishCities.includes(item.city)) {
           const salary = parseFloat(item.salary.replace(/\./g, "").replace(",", "."));
           if (!isNaN(salary)) {
             if (!acc[item.city]) {

@@ -202,8 +202,42 @@ def list_unique_companies():
     except Exception as e:
         print(f"Hata oluştu: {e}")
 
+def list_unique_company_sizes():
+    # JSON dosyasının yolunu belirle
+    json_path = "public/data/yazilimci-maaslari.json"
+    
+    # Dosyanın var olup olmadığını kontrol et
+    if not os.path.exists(json_path):
+        print(f"Hata: {json_path} dosyası bulunamadı.")
+        return
+    
+    try:
+        # JSON dosyasını oku
+        with open(json_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        
+        # Tüm company_size değerlerini topla
+        company_sizes = []
+        for entry in data:
+            if "company_size" in entry:
+                company_sizes.append(entry["company_size"])
+        
+        # Benzersiz company_size değerlerini bul
+        unique_company_sizes = sorted(set(company_sizes))
+        
+        # Sonuçları yazdır
+        print("\nBenzersiz şirket büyüklüğü değerleri:")
+        for size in unique_company_sizes:
+            print(f"- {size}")
+        
+        print(f"\nToplam {len(unique_company_sizes)} farklı şirket büyüklüğü kategorisi bulundu.")
+    
+    except Exception as e:
+        print(f"Hata oluştu: {e}")
+
 if __name__ == "__main__":
     # list_unique_work_types()
     # analyze_salaries_by_categories()
-    # list_unique_cities()
-    list_unique_companies()
+    list_unique_cities()
+    # list_unique_companies()
+    #  list_unique_company_sizes()
