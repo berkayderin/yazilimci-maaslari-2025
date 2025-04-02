@@ -235,9 +235,54 @@ def list_unique_company_sizes():
     except Exception as e:
         print(f"Hata oluştu: {e}")
 
+def list_unique_tech_stacks():
+    # JSON dosyasının yolunu belirle
+    json_path = "public/data/yazilimci-maaslari.json"
+    
+    # Dosyanın var olup olmadığını kontrol et
+    if not os.path.exists(json_path):
+        print(f"Hata: {json_path} dosyası bulunamadı.")
+        return
+    
+    try:
+        # JSON dosyasını oku
+        with open(json_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        
+        # Tüm tech_stack değerlerini topla
+        tech_stacks = []
+        for entry in data:
+            if "tech_stack" in entry:
+                # Virgülle ayrılmış teknolojileri ayır ve listeye ekle
+                technologies = entry["tech_stack"].split(",")
+                tech_stacks.extend([tech.strip() for tech in technologies])
+        
+        # Benzersiz tech_stack değerlerini bul ve sırala
+        unique_tech_stacks = sorted(set(tech_stacks))
+        
+        # Her bir teknolojinin kullanım sayısını hesapla
+        tech_stack_counts = defaultdict(int)
+        for tech in tech_stacks:
+            tech_stack_counts[tech] += 1
+        
+        # Kullanım sayısına göre sırala (çoktan aza)
+        sorted_tech_stacks = sorted(tech_stack_counts.items(), key=lambda x: x[1], reverse=True)
+        
+        # Sonuçları yazdır
+        print("\nTeknolojiler ve kullanım sayıları:")
+        for tech, count in sorted_tech_stacks:
+            print(f"- {tech}: {count} kez")
+        
+        print(f"\nToplam {len(unique_tech_stacks)} farklı teknoloji bulundu.")
+        print(f"Toplam {sum(tech_stack_counts.values())} teknoloji kullanımı var.")
+    
+    except Exception as e:
+        print(f"Hata oluştu: {e}")
+
 if __name__ == "__main__":
     # list_unique_work_types()
     # analyze_salaries_by_categories()
-    list_unique_cities()
+    # list_unique_cities()
     # list_unique_companies()
-    #  list_unique_company_sizes()
+    # list_unique_company_sizes()
+    list_unique_tech_stacks()

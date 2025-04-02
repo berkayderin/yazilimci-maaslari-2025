@@ -42,6 +42,7 @@ interface StatsResponse {
     workTypeDistribution: ChartData[];
     cityAverageSalary: ChartData[];
     companyAverageSalary: ChartData[];
+    techStackSalary: ChartData[];
     salaryRanges: {
       min: number;
       max: number;
@@ -104,11 +105,21 @@ export default function Home() {
           params.append("position", filter.position);
         if (filter.level !== "all") params.append("level", filter.level);
 
-        const response = await fetch(`/api/salary-stats?${params.toString()}`);
-        const data = await response.json();
+        const [statsResponse, techStackResponse] = await Promise.all([
+          fetch(`/api/salary-stats?${params.toString()}`),
+          fetch(`/api/salary-stats/tech-stack?${params.toString()}`),
+        ]);
 
-        if (data.success) {
-          setStats(data.stats);
+        const [statsData, techStackData] = await Promise.all([
+          statsResponse.json(),
+          techStackResponse.json(),
+        ]);
+
+        if (statsData.success && techStackData.success) {
+          setStats({
+            ...statsData.stats,
+            techStackSalary: techStackData.stats.techStackSalary,
+          });
         } else {
           setError("İstatistikler yüklenirken bir hata oluştu.");
         }
@@ -790,6 +801,109 @@ export default function Home() {
                               <Cell
                                 key={`cell-${index}`}
                                 fill={colors[index % colors.length]}
+                              />
+                            );
+                          })}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="md:col-span-2">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Teknolojilere Göre Maaş Dağılımı
+                  </CardTitle>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">
+                    Yazılım dillerine ve teknolojilere göre ortalama maaş
+                    dağılımı
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[500px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={stats.techStackSalary}
+                        layout="horizontal"
+                        margin={{ top: 20, right: 30, left: 30, bottom: 60 }}
+                      >
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="#eee"
+                          opacity={0.3}
+                          vertical={false}
+                        />
+                        <XAxis
+                          dataKey="name"
+                          tick={{
+                            fontSize: 12,
+                            fill: "#374151",
+                            fontWeight: 500,
+                          }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={80}
+                          interval={0}
+                        />
+                        <YAxis
+                          type="number"
+                          tick={{ fontSize: 11, fill: "#6b7280" }}
+                          tickFormatter={(value) =>
+                            new Intl.NumberFormat("tr-TR", {
+                              notation: "compact",
+                              compactDisplay: "short",
+                            }).format(value)
+                          }
+                          domain={[0, "dataMax"]}
+                        />
+                        <Tooltip
+                          formatter={(value: number) =>
+                            `${new Intl.NumberFormat("tr-TR").format(value)} ₺`
+                          }
+                          contentStyle={{
+                            backgroundColor: "rgba(255, 255, 255, 0.97)",
+                            borderRadius: "6px",
+                            padding: "8px 12px",
+                            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                            border: "none",
+                            fontSize: "12px",
+                          }}
+                          labelStyle={{
+                            fontWeight: "600",
+                            marginBottom: "6px",
+                            fontSize: "13px",
+                          }}
+                          cursor={{ fill: "rgba(59, 130, 246, 0.1)" }}
+                        />
+                        <Bar
+                          dataKey="value"
+                          name="Ortalama Maaş"
+                          fill="#3b82f6"
+                          radius={[4, 4, 0, 0]}
+                          barSize={32}
+                        >
+                          {stats.techStackSalary.map((entry, index) => {
+                            const colors = [
+                              "#1e40af", // En koyu mavi
+                              "#1d4ed8",
+                              "#2563eb",
+                              "#3b82f6",
+                              "#60a5fa", // En açık mavi
+                            ];
+
+                            return (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={
+                                  colors[
+                                    Math.floor(
+                                      (index / stats.techStackSalary.length) *
+                                        colors.length
+                                    )
+                                  ]
+                                }
                               />
                             );
                           })}
