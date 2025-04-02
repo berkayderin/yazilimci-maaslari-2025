@@ -17,6 +17,7 @@ import {
 } from "recharts";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
+import { RotateCcw } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -65,6 +66,14 @@ export default function Home() {
     positions: ["all"],
     levels: ["all"],
   });
+
+  const handleReset = () => {
+    setFilter({
+      position: "all",
+      level: "all",
+      currency: "₺ - Türk Lirası",
+    });
+  };
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -157,7 +166,8 @@ export default function Home() {
             Türkiye&apos;de Yazılımcı Maaşları 2025
           </h1>
           <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-sm">
-            Türkiye&apos;deki yazılımcı maaşlarının kapsamlı analizi
+            Türkiye&apos;deki yazılımcı maaşlarının kapsamlı analizi (Sadece
+            Türk Lirası)
           </p>
         </header>
 
@@ -165,9 +175,27 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <Card className="md:col-span-3">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                  Filtreler
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                      Filtreler
+                    </CardTitle>
+                    {(filter.position !== "all" || filter.level !== "all") && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Aktif filtreler uygulanıyor
+                      </p>
+                    )}
+                  </div>
+                  {(filter.position !== "all" || filter.level !== "all") && (
+                    <button
+                      onClick={handleReset}
+                      className="inline-flex items-center gap-1.5 px-2.5 h-7 text-xs bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-md transition-colors"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      Sıfırla
+                    </button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -179,7 +207,7 @@ export default function Home() {
                       onValueChange={(value) =>
                         setFilter((prev) => ({ ...prev, position: value }))
                       }
-                      defaultValue={filter.position}
+                      value={filter.position}
                     >
                       <SelectTrigger className="w-full h-8 text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-none focus:ring-1 focus:ring-blue-500">
                         <SelectValue placeholder="Pozisyon seçin" />
@@ -202,7 +230,7 @@ export default function Home() {
                       onValueChange={(value) =>
                         setFilter((prev) => ({ ...prev, level: value }))
                       }
-                      defaultValue={filter.level}
+                      value={filter.level}
                     >
                       <SelectTrigger className="w-full h-8 text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-none focus:ring-1 focus:ring-blue-500">
                         <SelectValue placeholder="Seviye seçin" />
@@ -222,20 +250,20 @@ export default function Home() {
 
             {stats && (
               <Card>
-                <CardHeader className="pb-0 pt-3 px-4">
+                <CardHeader className="pb-0 px-6 pt-4">
                   <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Ortalama Maaş
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-2 px-4 pb-4">
+                <CardContent className="px-6 pt-3">
                   <div className="flex flex-col">
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {getCurrencySymbol(filter.currency)}{" "}
                       {new Intl.NumberFormat("tr-TR").format(
                         stats.salaryRanges.avg
                       )}
                     </p>
-                    <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-400 mt-2">
                       <span>
                         {filter.position === "all"
                           ? "Tüm pozisyonlar"
