@@ -166,91 +166,93 @@ export default function Home() {
 
         <div className="max-w-6xl mx-auto mb-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <div className="md:col-span-3 p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-              <h2 className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-200">
-                Filtreler
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
-                    Pozisyon
-                  </label>
-                  <Select
-                    onValueChange={(value) =>
-                      setFilter((prev) => ({ ...prev, position: value }))
-                    }
-                    defaultValue={filter.position}
-                  >
-                    <SelectTrigger className="w-full h-8 text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-none focus:ring-1 focus:ring-blue-500">
-                      <SelectValue placeholder="Pozisyon seçin" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {options.positions.map((position) => (
-                        <SelectItem key={position} value={position}>
-                          {position === "all" ? "Tüm Pozisyonlar" : position}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+            <Card className="md:col-span-3">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Filtreler
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+                      Pozisyon
+                    </label>
+                    <Select
+                      onValueChange={(value) =>
+                        setFilter((prev) => ({ ...prev, position: value }))
+                      }
+                      defaultValue={filter.position}
+                    >
+                      <SelectTrigger className="w-full h-8 text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-none focus:ring-1 focus:ring-blue-500">
+                        <SelectValue placeholder="Pozisyon seçin" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {options.positions.map((position) => (
+                          <SelectItem key={position} value={position}>
+                            {position === "all" ? "Tüm Pozisyonlar" : position}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
-                    Seviye
-                  </label>
-                  <Select
-                    onValueChange={(value) =>
-                      setFilter((prev) => ({ ...prev, level: value }))
-                    }
-                    defaultValue={filter.level}
-                  >
-                    <SelectTrigger className="w-full h-8 text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-none focus:ring-1 focus:ring-blue-500">
-                      <SelectValue placeholder="Seviye seçin" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {options.levels.map((level) => (
-                        <SelectItem key={level} value={level}>
-                          {level === "all" ? "Tüm Seviyeler" : level}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+                      Seviye
+                    </label>
+                    <Select
+                      onValueChange={(value) =>
+                        setFilter((prev) => ({ ...prev, level: value }))
+                      }
+                      defaultValue={filter.level}
+                    >
+                      <SelectTrigger className="w-full h-8 text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-none focus:ring-1 focus:ring-blue-500">
+                        <SelectValue placeholder="Seviye seçin" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {options.levels.map((level) => (
+                          <SelectItem key={level} value={level}>
+                            {level === "all" ? "Tüm Seviyeler" : level}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
-                    Para Birimi
-                  </label>
-                  <Select
-                    onValueChange={(value) =>
-                      setFilter((prev) => ({ ...prev, currency: value }))
-                    }
-                    defaultValue={filter.currency}
-                  >
-                    <SelectTrigger className="w-full h-8 text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-none focus:ring-1 focus:ring-blue-500">
-                      <SelectValue placeholder="Para birimi seçin" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tüm Para Birimleri</SelectItem>
-                      <SelectItem value="₺ - Türk Lirası">
-                        ₺ - Türk Lirası
-                      </SelectItem>
-                      <SelectItem value="$ - Dolar">$ - Dolar</SelectItem>
-                      <SelectItem value="€ - Euro">€ - Euro</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+                      Para Birimi
+                    </label>
+                    <Select
+                      onValueChange={(value) =>
+                        setFilter((prev) => ({ ...prev, currency: value }))
+                      }
+                      defaultValue={filter.currency}
+                    >
+                      <SelectTrigger className="w-full h-8 text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-none focus:ring-1 focus:ring-blue-500">
+                        <SelectValue placeholder="Para birimi seçin" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tüm Para Birimleri</SelectItem>
+                        <SelectItem value="₺ - Türk Lirası">
+                          ₺ - Türk Lirası
+                        </SelectItem>
+                        <SelectItem value="$ - Dolar">$ - Dolar</SelectItem>
+                        <SelectItem value="€ - Euro">€ - Euro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             {stats && (
-              <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm rounded-lg overflow-hidden">
+              <Card>
                 <CardHeader className="pb-0 pt-3 px-4">
-                  <div className="flex items-center space-x-2">
-                    <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      Ortalama Maaş
-                    </CardTitle>
-                  </div>
+                  <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Ortalama Maaş
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-2 px-4 pb-4">
                   <div className="flex flex-col">
@@ -283,309 +285,325 @@ export default function Home() {
         {stats && (
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3">
-                <h3 className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">
-                  Pozisyona Göre Ortalama Maaş
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-xs mb-2">
-                  Yazılım pozisyonlarında ortalama maaş dağılımı
-                </p>
-                <div className="h-[240px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart
-                      data={stats.positionAverageSalary.slice(0, 8)}
-                      margin={{ top: 10, right: 10, left: 10, bottom: 60 }}
-                    >
-                      <defs>
-                        <linearGradient
-                          id="colorValue"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="5%"
-                            stopColor="#3b82f6"
-                            stopOpacity={0.8}
-                          />
-                          <stop
-                            offset="95%"
-                            stopColor="#3b82f6"
-                            stopOpacity={0.1}
-                          />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="#eee"
-                        opacity={0.3}
-                        vertical={false}
-                      />
-                      <XAxis
-                        dataKey="name"
-                        tick={{ fontSize: 10, fill: "#6b7280" }}
-                        angle={-45}
-                        textAnchor="end"
-                        height={60}
-                        tickMargin={10}
-                      />
-                      <YAxis
-                        tick={{ fontSize: 10, fill: "#6b7280" }}
-                        tickFormatter={(value) =>
-                          new Intl.NumberFormat("tr-TR", {
-                            notation: "compact",
-                            compactDisplay: "short",
-                          }).format(value)
-                        }
-                      />
-                      <Tooltip
-                        formatter={(value: number) =>
-                          new Intl.NumberFormat("tr-TR").format(value)
-                        }
-                        contentStyle={{
-                          backgroundColor: "rgba(255, 255, 255, 0.97)",
-                          borderRadius: "4px",
-                          padding: "6px",
-                          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-                          border: "none",
-                          fontSize: "12px",
-                        }}
-                        labelStyle={{
-                          fontWeight: "500",
-                          marginBottom: "4px",
-                          fontSize: "12px",
-                        }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="value"
-                        name="Ortalama Maaş"
-                        stroke="#3b82f6"
-                        fillOpacity={1}
-                        fill="url(#colorValue)"
-                        strokeWidth={2}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3">
-                <h3 className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">
-                  Deneyime Göre Maaş Dağılımı
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-xs mb-2">
-                  Deneyim yılına göre maaş değişimi
-                </p>
-                <div className="h-[240px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                      data={stats.experienceSalaryData}
-                      margin={{ top: 5, right: 10, left: 10, bottom: 50 }}
-                    >
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="#eee"
-                        opacity={0.3}
-                        vertical={false}
-                      />
-                      <XAxis
-                        dataKey="name"
-                        tick={{ fontSize: 10, fill: "#6b7280" }}
-                        angle={-45}
-                        textAnchor="end"
-                        height={60}
-                        tickMargin={10}
-                      />
-                      <YAxis
-                        tick={{ fontSize: 10, fill: "#6b7280" }}
-                        tickFormatter={(value) =>
-                          new Intl.NumberFormat("tr-TR", {
-                            notation: "compact",
-                            compactDisplay: "short",
-                          }).format(value)
-                        }
-                      />
-                      <Tooltip
-                        formatter={(value: number) =>
-                          new Intl.NumberFormat("tr-TR").format(value)
-                        }
-                        contentStyle={{
-                          backgroundColor: "rgba(255, 255, 255, 0.97)",
-                          borderRadius: "4px",
-                          padding: "6px",
-                          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-                          border: "none",
-                          fontSize: "12px",
-                        }}
-                        labelStyle={{
-                          fontWeight: "500",
-                          marginBottom: "4px",
-                          fontSize: "12px",
-                        }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="value"
-                        name="Ortalama Maaş"
-                        stroke="#3b82f6"
-                        strokeWidth={2}
-                        dot={{
-                          r: 3,
-                          fill: "#3b82f6",
-                          strokeWidth: 0,
-                        }}
-                        activeDot={{ r: 4, strokeWidth: 0 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3">
-                <h3 className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">
-                  Şirket Büyüklüğüne Göre Maaş
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-xs mb-2">
-                  Şirket büyüklüğüne göre ortalama maaş değişimi
-                </p>
-                <div className="h-[240px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={stats.companySizeAvgSalary}
-                      margin={{ top: 5, right: 10, left: 10, bottom: 25 }}
-                    >
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="#eee"
-                        opacity={0.3}
-                        vertical={false}
-                      />
-                      <XAxis
-                        dataKey="name"
-                        tick={{ fontSize: 10, fill: "#6b7280" }}
-                        tickMargin={5}
-                      />
-                      <YAxis
-                        tick={{ fontSize: 10, fill: "#6b7280" }}
-                        tickFormatter={(value) =>
-                          new Intl.NumberFormat("tr-TR", {
-                            notation: "compact",
-                            compactDisplay: "short",
-                          }).format(value)
-                        }
-                      />
-                      <Tooltip
-                        formatter={(value: number) =>
-                          new Intl.NumberFormat("tr-TR").format(value)
-                        }
-                        contentStyle={{
-                          backgroundColor: "rgba(255, 255, 255, 0.97)",
-                          borderRadius: "4px",
-                          padding: "6px",
-                          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-                          border: "none",
-                          fontSize: "12px",
-                        }}
-                        labelStyle={{
-                          fontWeight: "500",
-                          marginBottom: "4px",
-                          fontSize: "12px",
-                        }}
-                      />
-                      <Bar
-                        dataKey="value"
-                        name="Ortalama Maaş"
-                        fill="#3b82f6"
-                        radius={[2, 2, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3">
-                <h3 className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">
-                  Çalışma Türüne Göre Dağılım
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-xs mb-2">
-                  Remote, Ofis ve Hibrit çalışanların dağılımı
-                </p>
-                <div className="h-[240px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={stats.workTypeDistribution}
-                      layout="vertical"
-                      margin={{ top: 5, right: 30, left: 60, bottom: 5 }}
-                    >
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="#eee"
-                        opacity={0.3}
-                        horizontal={false}
-                      />
-                      <XAxis
-                        type="number"
-                        tick={{ fontSize: 10, fill: "#6b7280" }}
-                        tickFormatter={(value) =>
-                          new Intl.NumberFormat("tr-TR", {
-                            notation: "compact",
-                            compactDisplay: "short",
-                          }).format(value)
-                        }
-                      />
-                      <YAxis
-                        dataKey="name"
-                        type="category"
-                        tick={{ fontSize: 10, fill: "#6b7280" }}
-                        width={100}
-                      />
-                      <Tooltip
-                        formatter={(value: number) =>
-                          new Intl.NumberFormat("tr-TR").format(value)
-                        }
-                        contentStyle={{
-                          backgroundColor: "rgba(255, 255, 255, 0.97)",
-                          borderRadius: "4px",
-                          padding: "6px",
-                          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-                          border: "none",
-                          fontSize: "12px",
-                        }}
-                        labelStyle={{
-                          fontWeight: "500",
-                          marginBottom: "4px",
-                          fontSize: "12px",
-                        }}
-                      />
-                      <Bar
-                        dataKey="value"
-                        name="Çalışan Sayısı"
-                        fill="#3b82f6"
-                        radius={[0, 2, 2, 0]}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Pozisyona Göre Ortalama Maaş
+                  </CardTitle>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">
+                    Yazılım pozisyonlarında ortalama maaş dağılımı
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[240px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart
+                        data={stats.positionAverageSalary.slice(0, 8)}
+                        margin={{ top: 10, right: 10, left: 10, bottom: 60 }}
                       >
-                        {stats.workTypeDistribution.map((entry, index) => {
-                          const colors = [
-                            "#1e40af", // En koyu mavi
-                            "#2563eb",
-                            "#3b82f6",
-                            "#60a5fa",
-                            "#93c5fd", // En açık mavi
-                          ];
-
-                          return (
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={colors[index % colors.length]}
+                        <defs>
+                          <linearGradient
+                            id="colorValue"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                          >
+                            <stop
+                              offset="5%"
+                              stopColor="#3b82f6"
+                              stopOpacity={0.8}
                             />
-                          );
-                        })}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+                            <stop
+                              offset="95%"
+                              stopColor="#3b82f6"
+                              stopOpacity={0.1}
+                            />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="#eee"
+                          opacity={0.3}
+                          vertical={false}
+                        />
+                        <XAxis
+                          dataKey="name"
+                          tick={{ fontSize: 10, fill: "#6b7280" }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={60}
+                          tickMargin={10}
+                        />
+                        <YAxis
+                          tick={{ fontSize: 10, fill: "#6b7280" }}
+                          tickFormatter={(value) =>
+                            new Intl.NumberFormat("tr-TR", {
+                              notation: "compact",
+                              compactDisplay: "short",
+                            }).format(value)
+                          }
+                        />
+                        <Tooltip
+                          formatter={(value: number) =>
+                            new Intl.NumberFormat("tr-TR").format(value)
+                          }
+                          contentStyle={{
+                            backgroundColor: "rgba(255, 255, 255, 0.97)",
+                            borderRadius: "4px",
+                            padding: "6px",
+                            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                            border: "none",
+                            fontSize: "12px",
+                          }}
+                          labelStyle={{
+                            fontWeight: "500",
+                            marginBottom: "4px",
+                            fontSize: "12px",
+                          }}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="value"
+                          name="Ortalama Maaş"
+                          stroke="#3b82f6"
+                          fillOpacity={1}
+                          fill="url(#colorValue)"
+                          strokeWidth={2}
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Deneyime Göre Maaş Dağılımı
+                  </CardTitle>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">
+                    Deneyim yılına göre maaş değişimi
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[240px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={stats.experienceSalaryData}
+                        margin={{ top: 5, right: 10, left: 10, bottom: 50 }}
+                      >
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="#eee"
+                          opacity={0.3}
+                          vertical={false}
+                        />
+                        <XAxis
+                          dataKey="name"
+                          tick={{ fontSize: 10, fill: "#6b7280" }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={60}
+                          tickMargin={10}
+                        />
+                        <YAxis
+                          tick={{ fontSize: 10, fill: "#6b7280" }}
+                          tickFormatter={(value) =>
+                            new Intl.NumberFormat("tr-TR", {
+                              notation: "compact",
+                              compactDisplay: "short",
+                            }).format(value)
+                          }
+                        />
+                        <Tooltip
+                          formatter={(value: number) =>
+                            new Intl.NumberFormat("tr-TR").format(value)
+                          }
+                          contentStyle={{
+                            backgroundColor: "rgba(255, 255, 255, 0.97)",
+                            borderRadius: "4px",
+                            padding: "6px",
+                            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                            border: "none",
+                            fontSize: "12px",
+                          }}
+                          labelStyle={{
+                            fontWeight: "500",
+                            marginBottom: "4px",
+                            fontSize: "12px",
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="value"
+                          name="Ortalama Maaş"
+                          stroke="#3b82f6"
+                          strokeWidth={2}
+                          dot={{
+                            r: 3,
+                            fill: "#3b82f6",
+                            strokeWidth: 0,
+                          }}
+                          activeDot={{ r: 4, strokeWidth: 0 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Şirket Büyüklüğüne Göre Maaş
+                  </CardTitle>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">
+                    Şirket büyüklüğüne göre ortalama maaş değişimi
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[240px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={stats.companySizeAvgSalary}
+                        margin={{ top: 5, right: 10, left: 10, bottom: 25 }}
+                      >
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="#eee"
+                          opacity={0.3}
+                          vertical={false}
+                        />
+                        <XAxis
+                          dataKey="name"
+                          tick={{ fontSize: 10, fill: "#6b7280" }}
+                          tickMargin={5}
+                        />
+                        <YAxis
+                          tick={{ fontSize: 10, fill: "#6b7280" }}
+                          tickFormatter={(value) =>
+                            new Intl.NumberFormat("tr-TR", {
+                              notation: "compact",
+                              compactDisplay: "short",
+                            }).format(value)
+                          }
+                        />
+                        <Tooltip
+                          formatter={(value: number) =>
+                            new Intl.NumberFormat("tr-TR").format(value)
+                          }
+                          contentStyle={{
+                            backgroundColor: "rgba(255, 255, 255, 0.97)",
+                            borderRadius: "4px",
+                            padding: "6px",
+                            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                            border: "none",
+                            fontSize: "12px",
+                          }}
+                          labelStyle={{
+                            fontWeight: "500",
+                            marginBottom: "4px",
+                            fontSize: "12px",
+                          }}
+                        />
+                        <Bar
+                          dataKey="value"
+                          name="Ortalama Maaş"
+                          fill="#3b82f6"
+                          radius={[2, 2, 0, 0]}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Çalışma Türüne Göre Dağılım
+                  </CardTitle>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">
+                    Remote, Ofis ve Hibrit çalışanların dağılımı
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[240px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={stats.workTypeDistribution}
+                        layout="vertical"
+                        margin={{ top: 5, right: 30, left: 60, bottom: 5 }}
+                      >
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="#eee"
+                          opacity={0.3}
+                          horizontal={false}
+                        />
+                        <XAxis
+                          type="number"
+                          tick={{ fontSize: 10, fill: "#6b7280" }}
+                          tickFormatter={(value) =>
+                            new Intl.NumberFormat("tr-TR", {
+                              notation: "compact",
+                              compactDisplay: "short",
+                            }).format(value)
+                          }
+                        />
+                        <YAxis
+                          dataKey="name"
+                          type="category"
+                          tick={{ fontSize: 10, fill: "#6b7280" }}
+                          width={100}
+                        />
+                        <Tooltip
+                          formatter={(value: number) =>
+                            new Intl.NumberFormat("tr-TR").format(value)
+                          }
+                          contentStyle={{
+                            backgroundColor: "rgba(255, 255, 255, 0.97)",
+                            borderRadius: "4px",
+                            padding: "6px",
+                            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                            border: "none",
+                            fontSize: "12px",
+                          }}
+                          labelStyle={{
+                            fontWeight: "500",
+                            marginBottom: "4px",
+                            fontSize: "12px",
+                          }}
+                        />
+                        <Bar
+                          dataKey="value"
+                          name="Çalışan Sayısı"
+                          fill="#3b82f6"
+                          radius={[0, 2, 2, 0]}
+                        >
+                          {stats.workTypeDistribution.map((entry, index) => {
+                            const colors = [
+                              "#1e40af", // En koyu mavi
+                              "#2563eb",
+                              "#3b82f6",
+                              "#60a5fa",
+                              "#93c5fd", // En açık mavi
+                            ];
+
+                            return (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={colors[index % colors.length]}
+                              />
+                            );
+                          })}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         )}
