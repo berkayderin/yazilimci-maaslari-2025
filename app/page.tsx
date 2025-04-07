@@ -199,6 +199,32 @@ export default function Home() {
           </p>
         </header>
 
+        <div className="max-w-6xl mx-auto my-4 pt-4 text-center border-t border-gray-200 dark:border-gray-700 pb-2">
+          <p className="text-gray-500 dark:text-gray-400 text-xs">
+            Veri son güncelleme:{" "}
+            {format(new Date(), "d MMMM yyyy", { locale: tr })}
+          </p>
+          <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
+            <a
+              href="https://github.com/oncekiyazilimci/2025-yazilim-sektoru-maaslari"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline font-medium"
+            >
+              Kaynak: Önceki Yazılımcı
+            </a>{" "}
+            &middot;{" "}
+            <a
+              href="https://berkayderin.com.tr/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline font-medium"
+            >
+              Geliştirici: Frontend Sofware Engineer
+            </a>
+          </p>
+        </div>
+
         <div className="max-w-6xl mx-auto mb-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <Card className="md:col-span-3">
@@ -1003,32 +1029,6 @@ export default function Home() {
           </div>
         )}
       </div>
-
-      <footer className="max-w-6xl mx-auto pb-4 text-center border-t border-gray-200 dark:border-gray-700 pt-2">
-        <p className="text-gray-500 dark:text-gray-400 text-xs">
-          Veri son güncelleme:{" "}
-          {format(new Date(), "d MMMM yyyy", { locale: tr })}
-        </p>
-        <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
-          <a
-            href="https://github.com/oncekiyazilimci/2025-yazilim-sektoru-maaslari"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline font-medium"
-          >
-            Kaynak
-          </a>{" "}
-          &middot;{" "}
-          <a
-            href="https://github.com/berkayderin"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline font-medium"
-          >
-            Sofware Engineer
-          </a>
-        </p>
-      </footer>
     </div>
   );
 }
