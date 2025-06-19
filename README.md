@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Software Developer Salaries 2025
 
-## Getting Started
+Comprehensive analysis and visualization of software developer salaries in Turkey. This project provides salary trends, position-based comparisons, and analysis by experience levels in the software industry.
 
-First, run the development server:
+## Features
+
+-   Position and experience level-based salary filtering
+-   Interactive charts and visualizations
+-   Analysis by company size, tech stack, and cities
+-   Responsive design
+-   Real-time data analysis
+
+## Technologies
+
+-   **Frontend**: Next.js 14, React 18, TypeScript
+-   **Styling**: Tailwind CSS
+-   **Charts**: Recharts
+-   **UI Components**: Radix UI
+-   **Data**: JSON-based dataset
+
+## Installation
 
 ```bash
+# Clone the project
+git clone https://github.com/berkayderin/yazilimci-maaslari-2025.git
+
+# Install dependencies
+npm install
+
+# Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will run at [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## API Endpoints
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+-   `GET /api/salary-data` - Returns salary data and basic statistics
+-   `GET /api/salary-stats` - Returns general salary statistics
+-   `GET /api/salary-stats/tech-stack` - Returns technology-based salary analysis
+-   `GET /api/salary-stats/position-experience` - Returns position and experience-based analysis
 
-## Learn More
+## Data Source
 
-To learn more about Next.js, take a look at the following resources:
+Data is sourced from the [Önceki Yazılımcı](https://github.com/oncekiyazilimci/2025-yazilim-sektoru-maaslari) community.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Create production build
+npm run build
 
-## Deploy on Vercel
+# Start production server
+npm start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contributing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
